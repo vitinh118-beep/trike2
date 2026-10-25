@@ -1,0 +1,16 @@
+# Cấu hình Render Blueprint cho game server HACHIHI Counter-Strike.
+# Render đọc file này khi anh chọn: New + > Blueprint > chọn repo GitHub.
+services:
+  - type: web
+    name: hachihi-cs-server
+    runtime: node
+    plan: free
+    region: singapore # gần Việt Nam nhất, ping thấp nhất
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20

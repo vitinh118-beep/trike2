@@ -1,0 +1,17 @@
+{
+  "name": "hachihi-cs-server",
+  "version": "0.1.0",
+  "description": "Game server cho HACHIHI Counter-Strike (Node.js + WebSocket)",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/smoke.js && node test/combat.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

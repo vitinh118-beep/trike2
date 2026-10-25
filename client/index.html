@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HACHIHI Counter-Strike</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game"></div>
+
+  <!-- HUD trong trận -->
+  <div id="hud" class="hidden">
+    <div id="topbar">
+      <div class="side red"><span id="aliveA">5</span><b id="scoreA">0</b></div>
+      <div id="timerbox"><span id="roundlabel">Vòng 1</span><b id="timer">0:00</b></div>
+      <div class="side blue"><b id="scoreB">0</b><span id="aliveB">5</span></div>
+    </div>
+    <div id="killfeed"></div>
+    <div id="crosshair"><i></i><i></i><i></i><i></i></div>
+    <div id="hitmarker"></div>
+    <div id="pops"></div>
+    <div id="dmgdir"><i></i></div>
+    <div id="vignette"></div>
+    <pre id="stats" class="hidden"></pre>
+    <div id="banner"></div>
+    <div id="spectate"></div>
+    <div id="pingbox"></div>
+    <div id="bottomleft"><span class="lbl">HP</span><b id="hp">100</b></div>
+    <div id="bottomright">
+      <span id="wname">Súng trường</span>
+      <b id="ammo">30 / 90</b>
+      <div id="weaponbar"></div>
+    </div>
+    <div id="hint">Tab: bảng điểm · R: thay đạn · 1 / 2 / 3: đổi súng · F3: FPS/ping · Esc: nhả chuột</div>
+  </div>
+
+  <div id="scoreboard" class="hidden"></div>
+
+  <div id="clickplay" class="hidden"><div>Nhấp chuột để vào trận</div></div>
+
+  <!-- Menu chính -->
+  <div id="menu" class="screen">
+    <div class="panel">
+      <h1>HACHIHI<span>COUNTER-STRIKE</span></h1>
+      <p class="sub">FPS 3D 5 đấu 5 · máy chủ trên Render.com</p>
+
+      <label>Nickname
+        <input id="nick" maxlength="14" placeholder="Nhập tên của bạn" autocomplete="off">
+      </label>
+      <label>Địa chỉ server
+        <input id="serverUrl" placeholder="ws://localhost:8080" autocomplete="off" spellcheck="false">
+      </label>
+      <label>Độ nhạy chuột: <b id="sensVal">1.0</b>
+        <input id="sens" type="range" min="0.3" max="3" step="0.1" value="1">
+      </label>
+      <label>Đồ họa
+        <select id="quality">
+          <option value="auto">Tự động (khuyên dùng)</option>
+          <option value="low">Thấp (máy yếu)</option>
+          <option value="medium">Vừa</option>
+          <option value="high">Cao</option>
+        </select>
+      </label>
+
+      <div class="row">
+        <button id="btnCreate" class="primary">Tạo phòng</button>
+      </div>
+      <div class="row">
+        <input id="pin" maxlength="4" inputmode="numeric" placeholder="Mã PIN 4 số" autocomplete="off">
+        <button id="btnJoin">Vào phòng</button>
+      </div>
+
+      <div id="menuStatus" class="status"></div>
+      <button id="btnCancel" class="ghost hidden">Huỷ kết nối</button>
+
+      <p class="controls">
+        <b>Điều khiển:</b> WASD di chuyển · Chuột ngắm và bắn · Space nhảy · Shift đi chậm · R thay đạn · 1/2/3 đổi súng · Tab bảng điểm
+      </p>
+    </div>
+  </div>
+
+  <!-- Phòng chờ -->
+  <div id="lobby" class="screen hidden">
+    <div class="panel wide">
+      <div class="lobbyhead">
+        <div>
+          <div class="sub">Mã PIN phòng</div>
+          <div id="lobbyPin" class="pin">----</div>
+        </div>
+        <div id="lobbyPing" class="sub"></div>
+      </div>
+
+      <div class="teams">
+        <div class="team red">
+          <h2>ĐỘI ĐỎ <small id="countA">0/5</small></h2>
+          <ul id="listA"></ul>
+          <button id="joinA">Vào đội Đỏ</button>
+        </div>
+        <div class="team blue">
+          <h2>ĐỘI XANH <small id="countB">0/5</small></h2>
+          <ul id="listB"></ul>
+          <button id="joinB">Vào đội Xanh</button>
+        </div>
+      </div>
+
+      <div id="lobbyMsg" class="status"></div>
+      <div class="row">
+        <button id="btnStart" class="primary">Bắt đầu trận</button>
+        <button id="btnLeave" class="ghost">Rời phòng</button>
+      </div>
+      <p class="controls">Gửi mã PIN cho bạn bè để họ vào cùng phòng. Có thể bắt đầu với 1 người để chơi thử (vòng kết thúc khi hết giờ).</p>
+    </div>
+  </div>
+
+  <script src="dist/bundle.js"></script>
+</body>
+</html>

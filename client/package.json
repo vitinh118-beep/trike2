@@ -1,0 +1,41 @@
+{
+  "name": "hachihi-counter-strike",
+  "version": "0.2.0",
+  "description": "HACHIHI Counter-Strike - game FPS 3D (Three.js + Electron)",
+  "author": "HACHIHI",
+  "main": "electron/main.js",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "start": "node build.js && electron .",
+    "test": "node test/core.mjs",
+    "web": "node build.js && node serve.js",
+    "dist": "node build.js --min && electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.24.0",
+    "three": "^0.170.0"
+  },
+  "build": {
+    "appId": "vn.hachihi.counterstrike",
+    "productName": "HACHIHI Counter-Strike",
+    "directories": { "output": "release" },
+    "files": [
+      "electron/**/*",
+      "dist/bundle.js",
+      "index.html",
+      "style.css",
+      "package.json"
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    }
+  }
+}

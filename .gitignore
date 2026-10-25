@@ -1,0 +1,6 @@
+node_modules/
+client/dist/
+client/release/
+*.log
+.DS_Store
+Thumbs.db
