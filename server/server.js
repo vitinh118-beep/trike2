@@ -46,7 +46,15 @@ function start(port = C.PORT) {
 
   manager.startLoop();
   server.listen(port, '0.0.0.0', () => {
-    console.log(`[HACHIHI] Server lắng nghe cổng ${server.address().port}`);
+    const port2 = server.address().port;
+    console.log(`[HACHIHI] Server lắng nghe cổng ${port2}`);
+    if (!process.env.RENDER) {
+      const ips = [];
+      for (const list of Object.values(require('os').networkInterfaces())) {
+        for (const a of list || []) if (a.family === 'IPv4' && !a.internal) ips.push(a.address);
+      }
+      if (ips.length) console.log(`[HACHIHI] Chơi mạng nội bộ: chọn "Mạng nội bộ" rồi nhập IP: ${ips.join('  hoặc  ')}`);
+    }
   });
 
   const stop = () => {
