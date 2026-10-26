@@ -4,7 +4,7 @@
 //  địa chỉ của anh, ví dụ: 'wss://hachihi-cs-server.onrender.com'
 //  (Người chơi cũng có thể nhập lại ngay trong màn hình menu.)
 // ============================================================
-export const DEFAULT_SERVER = 'ws://localhost:8080';
+export const DEFAULT_SERVER = 'wss://hachihi-cs-server-0bgu.onrender.com';
 
 // Tần suất gửi vị trí lên server (lần/giây).
 export const SEND_HZ = 30;

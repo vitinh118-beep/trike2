@@ -1,4 +1,5 @@
 // Điểm vào của client: nối giao diện, mạng, điều khiển, âm thanh và vòng lặp game.
+import * as THREE from 'three';
 import { DEFAULT_SERVER, SEND_HZ, CONNECT_TIMEOUT_MS, TEAM_NAMES, PHYSICS_STEP } from './config.js';
 import { World, MAP_DATA } from './game/world.js';
 import { Controller, EYE, makeBoxes } from './game/controller.js';
@@ -43,6 +44,9 @@ const stepper = new FixedStepper(PHYSICS_STEP);
 const frameStats = new FrameStats(300);
 world.onResize = (aspect) => vm.resize(aspect);
 vm.resize(window.innerWidth / window.innerHeight);
+if (world.envTex) vm.setEnv(world.envTex);
+const _mz = new THREE.Vector3();
+const _ej = new THREE.Vector3();
 
 const blankSelf = () => ({
   hp: 100,
@@ -70,6 +74,7 @@ const S = {
   reconnecting: false,
   specIdx: 0,
   camSet: false,
+  menuT: 0,
   stepT: 0,
   sens: 1,
   spray: 0, // ước lượng số phát liên tiếp để vẽ tâm ngắm nở ra (server mới là bên quyết định tản đạn thật)
@@ -91,7 +96,27 @@ const pose = () => ({
 // Khởi tạo menu
 // ---------------------------------------------------------------
 ui.el.nick.value = store.get('nick', '');
-ui.el.serverUrl.value = store.get('server', DEFAULT_SERVER);
+// Hai kiểu máy chủ, mỗi kiểu nhớ địa chỉ riêng: Render (online) hoặc 1 IP mạng nội bộ.
+const MODES = {
+  render: { label: 'Địa chỉ server Render', ph: 'wss://ten-server.onrender.com', def: DEFAULT_SERVER, hint: 'Chủ phòng và người chơi dùng chung địa chỉ này (chơi qua Internet).' },
+  lan: { label: 'IP máy làm server', ph: '192.168.1.10', def: '', hint: 'Nhập IP của máy đang chạy server (cổng 8080 tự thêm). Mọi người phải cùng mạng Wi-Fi/LAN.' },
+};
+S.mode = store.get('mode', 'render') === 'lan' ? 'lan' : 'render';
+function applyMode(save) {
+  const m = MODES[S.mode];
+  ui.el.serverMode.value = S.mode;
+  ui.el.serverLabel.textContent = m.label;
+  ui.el.serverUrl.placeholder = m.ph;
+  ui.el.serverHint.textContent = m.hint;
+  ui.el.serverUrl.value = store.get('server_' + S.mode, m.def);
+  if (save) store.set('mode', S.mode);
+}
+applyMode(false);
+ui.el.serverMode.addEventListener('change', () => {
+  store.set('server_' + S.mode, ui.el.serverUrl.value.trim());
+  S.mode = ui.el.serverMode.value === 'lan' ? 'lan' : 'render';
+  applyMode(true);
+});
 ui.el.sens.value = store.get('sens', '1');
 S.sens = parseFloat(ui.el.sens.value) || 1;
 document.getElementById('sensVal').textContent = S.sens.toFixed(1);
@@ -120,6 +145,12 @@ ui.el.sens.addEventListener('input', () => {
 
 function normalizeUrl(raw) {
   let u = (raw || '').trim();
+  if (S.mode === 'lan') {
+    if (!u) u = 'localhost';
+    u = u.replace(/^(wss?|https?):\/\//i, '').replace(/\/+$/, '');
+    if (!/:\d+$/.test(u)) u += ':8080';
+    return 'ws://' + u;
+  }
   if (!u) return DEFAULT_SERVER;
   u = u.replace(/^https:\/\//i, 'wss://').replace(/^http:\/\//i, 'ws://');
   if (!/^wss?:\/\//i.test(u)) {
@@ -141,6 +172,8 @@ async function connectThen(message) {
   }
   const url = normalizeUrl(ui.el.serverUrl.value);
   ui.el.serverUrl.value = url;
+  store.set('mode', S.mode);
+  store.set('server_' + S.mode, url);
   store.set('nick', nick);
   store.set('server', url);
   S.serverUrl = url;
@@ -205,6 +238,7 @@ function enterGame() {
   controller.clearKeys();
   S.mouseDown = false;
   world.clearRemotes();
+  world.clearEffects();
   ui.setAmmo(S.self);
   ui.setHp(S.self.hp);
 }
@@ -219,6 +253,7 @@ function leaveGame() {
   S.round = blankRound();
   controller.clearKeys();
   world.clearRemotes();
+  world.clearEffects();
   ui.hideBanner();
   ui.setSpectate('');
   ui.showScreen('lobby');
@@ -240,6 +275,7 @@ function backToMenu(msg, kind) {
   S.mouseDown = false;
   controller.clearKeys();
   world.clearRemotes();
+  world.clearEffects();
   ui.hideBanner();
   ui.setSpectate('');
   S.screen = 'menu';
@@ -374,9 +410,10 @@ net.on('shot', (m) => {
       controller.y + EYE + fy * 0.7 - 0.14,
       controller.z + fz * 0.7 + rz * 0.16,
     ];
-    world.addTracer(from, m.to, 0xffd98a);
+    world.addTracer(from, m.to, 0xffd98a, m.h);
   } else {
-    world.addTracer([m.from[0], m.from[1] - 0.25, m.from[2]], m.to, 0xffd98a);
+    world.addTracer([m.from[0], m.from[1] - 0.25, m.from[2]], m.to, 0xffd98a, m.h);
+    world.muzzleFlash([m.from[0], m.from[1] - 0.2, m.from[2]], 0.5);
     audio.shotAt(m.w, m.from[0] - cam.position.x, m.from[2] - cam.position.z, cam.rotation.y);
   }
 });
@@ -593,6 +630,15 @@ function tryFire(now) {
   net.send({ t: 'shoot', ...pose() }); // gửi TRƯỚC khi áp giật của chính phát này (giật ảnh hưởng phát sau)
   const rc = punch.kick(def.id, now / 1000);
   vm.kick(rc.gunKick);
+  {
+    world.camera.updateMatrixWorld(true);
+    vm.update(0, controller.speed, controller.grounded);
+    vm.muzzleWorld(world.camera, _mz);
+    world.muzzleFlash([_mz.x, _mz.y, _mz.z], def.id === 'shotgun' ? 1.3 : 1);
+    vm.ejectWorld(world.camera, _ej);
+    const yw = controller.yaw;
+    world.fx.casing([_ej.x, _ej.y, _ej.z], [Math.cos(yw), 0, -Math.sin(yw)], [0, 1, 0]);
+  }
   audio.shot(def.id, 0.9, 0);
   ui.setAmmo(S.self);
 
@@ -720,7 +766,17 @@ function frame(now) {
   last = now;
   if (S.screen !== 'game') {
     stepper.reset();
-    return; // menu / phòng chờ: không cần vẽ cảnh 3D
+    // Menu / phòng chờ: cảnh 3D xoay chậm làm nền (vẽ ~30 FPS cho nhẹ máy).
+    if (now - S.menuT >= 33) {
+      const md = Math.min((now - S.menuT) / 1000, 0.1);
+      S.menuT = now;
+      const a = now * 0.00006;
+      world.hiddenId = 0;
+      world.setCamera(Math.sin(a) * 30, 5.5 + Math.sin(a * 1.7) * 1.2, Math.cos(a) * 36, a, -0.12);
+      world.update(md, now);
+      world.render(null);
+    }
+    return;
   }
   gameFrame(dt, now);
   world.update(dt, now);

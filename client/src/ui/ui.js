@@ -6,7 +6,7 @@ const $ = (id) => document.getElementById(id);
 
 const el = {
   menu: $('menu'), lobby: $('lobby'), hud: $('hud'), scoreboard: $('scoreboard'), clickplay: $('clickplay'),
-  nick: $('nick'), serverUrl: $('serverUrl'), sens: $('sens'), sensVal: $('sensVal'),
+  nick: $('nick'), serverUrl: $('serverUrl'), serverMode: $('serverMode'), serverLabel: $('serverLabel'), serverHint: $('serverHint'), sens: $('sens'), sensVal: $('sensVal'),
   btnCreate: $('btnCreate'), btnJoin: $('btnJoin'), pin: $('pin'), menuStatus: $('menuStatus'), btnCancel: $('btnCancel'),
   lobbyPin: $('lobbyPin'), lobbyPing: $('lobbyPing'), listA: $('listA'), listB: $('listB'),
   countA: $('countA'), countB: $('countB'), joinA: $('joinA'), joinB: $('joinB'),
