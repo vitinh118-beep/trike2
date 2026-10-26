@@ -101,11 +101,13 @@ function handleShoot(room, shooter, now, rand = Math.random) {
 
   const damage = new Map();
   let firstEnd = null;
+  let firstHit = false;
   for (let i = 0; i < w.pellets; i++) {
     const dir = applySpread(baseDir, spread, rand);
     const r = traceRay(origin, dir, w.range, targets);
     if (i === 0) {
       firstEnd = [origin[0] + dir[0] * r.t, origin[1] + dir[1] * r.t, origin[2] + dir[2] * r.t];
+      firstHit = !!r.hit;
     }
     if (r.hit) {
       const rec = damage.get(r.hit.ref) || { dmg: 0, head: false };
@@ -117,7 +119,7 @@ function handleShoot(room, shooter, now, rand = Math.random) {
 
   room.broadcast({
     t: 'shot', id: shooter.id, w: w.id,
-    from: origin.map(r2), to: firstEnd.map(r2),
+    from: origin.map(r2), to: firstEnd.map(r2), h: firstHit ? 1 : 0,
   });
 
   for (const [victim, rec] of damage) {
