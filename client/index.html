@@ -48,9 +48,16 @@
       <label>Nickname
         <input id="nick" maxlength="14" placeholder="Nhập tên của bạn" autocomplete="off">
       </label>
-      <label>Địa chỉ server
-        <input id="serverUrl" placeholder="ws://localhost:8080" autocomplete="off" spellcheck="false">
+      <label>Kiểu máy chủ
+        <select id="serverMode">
+          <option value="render">Online (server trên Render)</option>
+          <option value="lan">Mạng nội bộ (LAN, 1 máy làm server)</option>
+        </select>
       </label>
+      <label><span id="serverLabel">Địa chỉ server</span>
+        <input id="serverUrl" placeholder="wss://ten-server.onrender.com" autocomplete="off" spellcheck="false">
+      </label>
+      <div id="serverHint" class="sub" style="margin:-6px 0 12px"></div>
       <label>Độ nhạy chuột: <b id="sensVal">1.0</b>
         <input id="sens" type="range" min="0.3" max="3" step="0.1" value="1">
       </label>

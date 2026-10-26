@@ -279,5 +279,17 @@ console.log('Thống kê khung hình');
   check('FPS trung bình và 1% low phản ánh giật', Math.abs(fs2.avgFps() - 1000 / ((297 * 8.33 + 150) / 300)) < 0.5 && fs2.low1Fps() < 25, `avg=${fs2.avgFps().toFixed(1)} 1%low=${fs2.low1Fps().toFixed(1)}`);
 }
 
+console.log('Hướng bề mặt vết đạn');
+{
+  const { faceNormalAt } = await import('../src/gfx/impact.js');
+  const bx = [{ minX: 0, maxX: 2, minY: 0, maxY: 2, minZ: 0, maxZ: 2 }];
+  const eq = (a, b) => a && a.every((v, i) => v === b[i]);
+  check('Trúng mặt +X', eq(faceNormalAt(bx, [2, 1, 1]), [1, 0, 0]));
+  check('Trúng mặt -Z', eq(faceNormalAt(bx, [1, 1, 0]), [0, 0, -1]));
+  check('Trúng đỉnh hộp', eq(faceNormalAt(bx, [1, 2, 1]), [0, 1, 0]));
+  check('Trúng sàn', eq(faceNormalAt(bx, [9, 0.01, 9]), [0, 1, 0]));
+  check('Giữa không trung -> null', faceNormalAt(bx, [9, 5, 9]) === null);
+}
+
 console.log(fails ? `\nCORE: ${fails} LỖI` : '\nCORE OK');
 process.exit(fails ? 1 : 0);
