@@ -1,4 +1,8 @@
-# HACHIHI Counter-Strike (MVP) — phiên bản 0.2
+# HACHIHI Counter-Strike (MVP) — phiên bản 0.3
+
+> **Có gì mới ở 0.3 (đồ họa):** bản đồ kho container lúc hoàng hôn với vật liệu PBR tự tạo (không cần tải file ngoài), bầu trời + phản chiếu môi trường, bóng đổ dài, hậu kỳ (bloom, AO ở mức Cao, tone mapping điện ảnh, tối góc, hạt phim), nhân vật có mũ/giáp/chân bước, xác ngã xuống, súng chi tiết + tay cầm súng, đèn loé nòng, vệt đạn, tia lửa, khói bụi, vết đạn trên tường, vỏ đạn rơi, menu có nền 3D.
+> Mức **Thấp** tắt hậu kỳ và bóng đổ cho máy yếu; **Tự động** tự giảm độ phân giải khi tụt FPS.
+> Server có thay đổi nhỏ (tin `shot` thêm cờ `h`) nên cần push lại thư mục `server` rồi để Render deploy.
 
 > **Có gì mới ở 0.2 (độ mượt, di chuyển, cảm giác bắn):**
 > - **Vật lý bước cố định 120 Hz**: chạy y hệt nhau ở 30, 60, 144 hay 240 FPS; hình ảnh nội suy giữa các bước nên không giật.
@@ -103,6 +107,11 @@ Mẹo bắn: súng trường giật lên theo mẫu, nhấp từng loạt ngắn
 Luật trận: mỗi vòng có 4 giây chuẩn bị (đứng yên), tối đa 120 giây đánh. Hạ hết đối thủ thì thắng vòng; hết giờ thì đội còn nhiều người sống hơn thắng. Đội nào thắng 8 vòng trước thì thắng trận, sau đó cả phòng quay về phòng chờ.
 
 ---
+
+### Chơi mạng nội bộ (LAN, không cần Render)
+1. Một máy làm server: chạy `run-server-lan.bat`. Cửa sổ sẽ in ra IP của máy (ví dụ `192.168.1.10`). Giữ cửa sổ mở. Nếu Windows hỏi tường lửa, chọn cho phép (mạng Private).
+2. Trong game, ở mục **Kiểu máy chủ** chọn **Mạng nội bộ**, nhập IP đó (cổng 8080 tự thêm). Máy làm server cũng có thể nhập `localhost`.
+3. Chủ phòng bấm Tạo phòng, người khác nhập PIN. Tất cả phải cùng mạng Wi-Fi/LAN. Game nhớ riêng địa chỉ cho từng kiểu.
 
 ## 2. Đưa lên GitHub
 
